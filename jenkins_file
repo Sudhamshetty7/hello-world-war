@@ -3,6 +3,7 @@ pipeline {
     stages {
         stage('checkout') {
             steps {
+                sh 'rm -rf projectpipe-1'
                 sh 'git clone https://github.com/Sudhamshetty7/hello-world-war/'
             }
         }
@@ -12,5 +13,8 @@ pipeline {
                 sh 'mvn clean install'
             }
         }
+        stage('deploy') {
+             steps {
+                 sh 'sudo cp /home/slave-1/workspace/projectpipe-1/target/hello-world-war-1.0.0.war /opt/apache-tomcat-8.5.98/webapps/
     }
 }
