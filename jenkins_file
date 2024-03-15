@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'node1' }
+    agent any
     stages {
         stage('checkout') {
             steps {
@@ -9,14 +9,17 @@ pipeline {
         }
         stage('build') {
             steps {
-                sh 'mvn --version'
-                sh 'mvn clean install'
-            }
+                dir(hello-world-war)
+                {
+                sh 'docker build -t tomcat-war:1.0'            }
         }
+}
+}
         stage('deploy') {
              steps {
-                 sh 'scp /home/slave-1/workspace/projectpipe-1/target/hello-world-war-1.0.0.war root@172.31.5.133:/opt/apache-tomcat-8.5.98/webapps/'
+                 sh 'doxker rm -f tomcat-war'
+                 sh 'docker run -d -p 8080:8080 --name tomcat-war tomcat-war:1.0'
 }
 }
-    }
+}
 }
