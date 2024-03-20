@@ -4,45 +4,44 @@ pipeline {
         stage('Checkout') {
             steps {
                 sh 'rm -rf hello-world-war'
-                sh ''
+                sh 'https://github.com/Sudhamshetty7/hello-world-war.git'
             }
         }
-		stage('Build') {
+	stage('Build') {
             steps {
-                sh 'echo "inside build"'
+                sh 'echo "inside build stage"'
                 dir("hello-world-war") {    
                     sh 'docker build -t tomcat-maven:${BUILD_NUMBER} .'
                 }
             }
         }
         stage('Push Image to Docker Hub') {         
-            steps {  
-                sh "docker tag tomcat-file:${BUILD_NUMBER} harshahd18/newrepo_20_03:${BUILD_NUMBER}"
-                sh "docker push harshahd18/newrepo_20_03:${BUILD_NUMBER}"                 
-                echo 'Image pushing completed..'       
+            steps { 
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                sh "docker login -u $USERNAME -p $PASSWORD"
+                sh "docker tag tomcat-file:${BUILD_NUMBER} sudham07/jeniks:${BUILD_NUMBER}"
+                sh "docker push sudham07/jeniks:${BUILD_NUMBER}"                 
+                echo 'Image pushed to registry'       
             }           
         }
-        
-        stage('Pull and Deploy') {
+        }
+        stage('Deploy') {
             parallel {
-                stage('Deploy to node1') {
-                    agent { label 'node1' }
+                stage('Deploy to slave1') {
+                    agent { label 'slave1' }
                     steps {
-                         withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
-                        sh "docker login -u $USERNAME -p $PASSWORD"
-                        sh "docker pull harshahd18/newrepo_20_03:${BUILD_NUMBER}"
-                        sh "docker run -d --name my_container_1 -p 8085:8080 harshahd18/newrepo_20_03:${BUILD_NUMBER}"
+                        sh "docker pull sudham07/jeniks:${BUILD_NUMBER}"
+                        sh "docker run -d --name container-1 -p 8080:8080 sudham07/jeniks:${BUILD_NUMBER}"
                     }
-                }
                 }
                 stage('Deploy to slave2') {
                     agent { label 'slave2' }
                     steps {
-                        sh "docker pull harshahd18/newrepo_20_03:${BUILD_NUMBER}"
-                        sh "docker run -d --name my_container_2 -p 8086:8080 harshahd18/newrepo_20_03:${BUILD_NUMBER}"
+                        sh "docker pull sudham07/jeniks:${BUILD_NUMBER}"
+                        sh "docker run -d --name container-2 -p 8080:8080 sudham07/jeniks:${BUILD_NUMBER}"
                     }
                 }
             }
-        }
-    }
+       }
+   }
 }
