@@ -11,7 +11,7 @@ pipeline {
             steps {
                 sh 'echo "inside build stage"'
                 dir("hello-world-war") {    
-                    sh 'docker build -t tomcat-maven:${BUILD_NUMBER} .'
+                    sh 'docker build -t tomcat-file:${BUILD_NUMBER} .'
                 }
             }
         }
