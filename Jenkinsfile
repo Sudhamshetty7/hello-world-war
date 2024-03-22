@@ -31,7 +31,8 @@ pipeline {
                     agent { label 'slave-2' }
                     steps {
 			withCredentials([usernamePassword(credentialsId: 'credentials', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {   
-                        sh "docker pull sudham07/jeniks:${BUILD_NUMBER}"
+                        sh "docker login -u $USERNAME -p $PASSWORD"
+			sh "docker pull sudham07/jeniks:${BUILD_NUMBER}"
                         sh "docker run -d --name container-1 -p 8080:8080 sudham07/jeniks:${BUILD_NUMBER}"
                     }
                 }
@@ -40,7 +41,8 @@ pipeline {
                     agent { label 'slave-3' }
                     steps {
 			withCredentials([usernamePassword(credentialsId: 'credentials', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {    
-                        sh "docker pull sudham07/jeniks:${BUILD_NUMBER}"
+                        sh "docker login -u $USERNAME -p $PASSWORD"
+			sh "docker pull sudham07/jeniks:${BUILD_NUMBER}"
                         sh "docker run -d --name container-2 -p 8080:8080 sudham07/jeniks:${BUILD_NUMBER}"
                     }
                 }
