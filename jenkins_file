@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'docker' }
+    agent { label 'slave-1' }
     stages {
         stage('Checkout') {
             steps {
@@ -27,15 +27,15 @@ pipeline {
         }
         stage('Deploy') {
             parallel {
-                stage('Deploy to slave1') {
-                    agent { label 'slave1' }
+                stage('Deploy to slave-2') {
+                    agent { label 'slave-2' }
                     steps {
                         sh "docker pull sudham07/jeniks:${BUILD_NUMBER}"
                         sh "docker run -d --name container-1 -p 8080:8080 sudham07/jeniks:${BUILD_NUMBER}"
                     }
                 }
-                stage('Deploy to slave2') {
-                    agent { label 'slave2' }
+                stage('Deploy to slave3') {
+                    agent { label 'slave-3' }
                     steps {
                         sh "docker pull sudham07/jeniks:${BUILD_NUMBER}"
                         sh "docker run -d --name container-2 -p 8080:8080 sudham07/jeniks:${BUILD_NUMBER}"
