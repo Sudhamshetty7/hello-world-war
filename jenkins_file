@@ -17,7 +17,7 @@ pipeline {
         }
         stage('Push Image to Docker Hub') {         
             steps { 
-                withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                withCredentials([usernamePassword(credentialsId: 'credentials', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
                 sh "docker login -u $USERNAME -p $PASSWORD"
                 sh "docker tag tomcat-file:${BUILD_NUMBER} sudham07/jeniks:${BUILD_NUMBER}"
                 sh "docker push sudham07/jeniks:${BUILD_NUMBER}"                 
